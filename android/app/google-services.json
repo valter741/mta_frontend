@@ -1,0 +1,68 @@
+{
+  "project_info": {
+    "project_number": "275528374518",
+    "project_id": "webrtc-test-mta",
+    "storage_bucket": "webrtc-test-mta.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:275528374518:android:c4650280d46ca0d76434d7",
+        "android_client_info": {
+          "package_name": "com.mta"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "275528374518-qokr7o9a8gkl27ts1t4grl818t98fjed.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDW3x_dZu_H4h-U1XhAPayMyPIScW0Ve-M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "275528374518-qokr7o9a8gkl27ts1t4grl818t98fjed.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:275528374518:android:d54603f92ab1065b6434d7",
+        "android_client_info": {
+          "package_name": "mta.valter.myapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "275528374518-qokr7o9a8gkl27ts1t4grl818t98fjed.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDW3x_dZu_H4h-U1XhAPayMyPIScW0Ve-M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "275528374518-qokr7o9a8gkl27ts1t4grl818t98fjed.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
