@@ -138,7 +138,7 @@ const Profile = () => {
                         defaultValue={password1}
                     />
                     <Pressable style={styles.inputButton} android_ripple={{color:'grey'}} onPress={() => doLogin()}>
-                        <Text>
+                        <Text style={{color: 'white'}}>
                             Login
                         </Text>
                     </Pressable>
@@ -159,7 +159,7 @@ const Profile = () => {
                         defaultValue={fullname}
                     />
                     <Pressable style={styles.inputButton} android_ripple={{color:'grey'}} onPress={() => doRegister()}>
-                        <Text>
+                        <Text style={{color: 'white'}}>
                             Register
                         </Text>
                     </Pressable>
@@ -185,15 +185,15 @@ const Profile = () => {
                             defaultValue={upName}
                         />
                         <Pressable style={styles.inputButton} android_ripple={{color:'grey'}} onPress={() => uploadImage()}>
-                            {upImage == "none" ? <Text>Vyber Obrazok</Text> : <Text>Obrazok Vybraty</Text>}                           
+                            {upImage == "none" ? <Text  style={{color: 'white'}}>Vyber Obrazok</Text> : <Text  style={{color: 'white'}}>Obrazok Vybraty</Text>}                           
                         </Pressable>
                         <Pressable style={styles.inputButton} android_ripple={{color:'grey'}} onPress={() => updateProfile()}>
-                            <Text>
+                            <Text  style={{color: 'white'}}>
                                 Update profilu
                             </Text>
                         </Pressable>
                         <Pressable style={styles.inputButton} android_ripple={{color:'grey'}} onPress={() => myContext.setLogin(0)}>
-                            <Text>
+                            <Text  style={{color: 'white'}}>
                                 Logout
                             </Text>
                         </Pressable>
@@ -217,6 +217,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#1c1c1c',
       },
     input: {
+        color: 'black',
         height: 40,
         margin: 12,
         borderWidth: 1,
@@ -235,6 +236,7 @@ const styles = StyleSheet.create({
         fontWeight: '600',
     },
     sectionDescription: {
+        color: 'white',
         paddingVertical: 12,   
         marginTop: 8,
         fontSize: 24,
