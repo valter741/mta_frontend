@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import {
     Alert,
     SafeAreaView,
@@ -8,13 +8,13 @@ import {
     Text,
     View,
   } from 'react-native';
-
+import AppContext from '../components/AppContext';
 import Notification from '../components/notification.js'
 import '../components/global.js'
 
 
 const Noti = () => {
-
+    const myContext = useContext(AppContext);
     const [isLoaded, setIsLoaded] = useState(false);
     const [reload, setReload] = useState(false);
     const [notifications, setNotifications] = useState({});
@@ -44,47 +44,55 @@ const Noti = () => {
 
     useEffect(() => {
         if(!isLoaded){
-            getNotifications("http://" + global.ip + "/bckend/noti/view");
+            getNotifications("http://" + global.ip + "/bckend/noti/view?targetid=" + myContext.thisLogin);
+        }
+        if (myContext.thisLogin == 0) {
+          setIsLoaded(false);
         }
       });
 
     return (
       <SafeAreaView style={styles.sectionContainer}>
-        <ScrollView>
-          {
-            isLoaded 
-              ? notifications.items.map((item, index) => {
-                  return (
-                    <View key={index}>
-                      <Notification 
-                        id={item.id} 
-                        userID={item.userid} 
-                        userFullName={item.userFullName} 
-                        targetID={item.targetid} 
-                        targetFullName={item.targetFullName} 
-                        taskID={item.taskid}  
-                        taskName={item.taskName} 
-                        content={item.content} 
-                        completion={item.taskCompletion} 
-                        seen={item.was_seen} 
-                      />
-                    </View>
-                  )
-                }) 
-              : <Text>Loading...</Text>
-          }
-          { 
-            reload 
-              ? <Pressable 
-                  style={styles.inputButton} 
-                  android_ripple={{color:'grey'}} 
-                  onPress={() => getNotifications("http://" + global.ip + "/bckend/noti/view")}
-                >
-                  <Text style={{fontSize: 18}}> Reload </Text>
-                </Pressable> 
-              : <Text></Text>
-          }
-        </ScrollView>
+        {
+          myContext.thisLogin == 0 
+            ? <Text>Login please.</Text> 
+            : <ScrollView>
+                {
+                  isLoaded
+                    ? notifications.items.map((item, index) => {
+                        return (
+                          <View key={index}>
+                            <Notification 
+                              id={item.id} 
+                              userID={item.userid} 
+                              userFullName={item.userFullName} 
+                              targetID={item.targetid} 
+                              targetFullName={item.targetFullName} 
+                              taskID={item.taskid}  
+                              taskName={item.taskName} 
+                              content={item.content} 
+                              completion={item.taskCompletion} 
+                              seen={item.was_seen} 
+                              getNotification={() => setIsLoaded(false)}
+                            />
+                          </View>
+                        )
+                      }) 
+                    : <Text>Loading...</Text>
+                }
+                { 
+                  reload 
+                    ? <Pressable 
+                        style={styles.inputButton} 
+                        android_ripple={{color:'grey'}} 
+                        onPress={() => getNotifications("http://" + global.ip + "/bckend/noti/view/?targetid=" + myContext.thisLogin)}
+                      >
+                        <Text style={{fontSize: 18}}> Reload </Text>
+                      </Pressable> 
+                    : <Text></Text>
+                }
+              </ScrollView>
+        }
       </SafeAreaView>
     );
 }

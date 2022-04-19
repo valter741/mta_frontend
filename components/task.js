@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import Dialog from 'react-native-dialog';
 import RadioGroup from 'react-native-radio-buttons-group';
 import {
@@ -9,7 +10,7 @@ import {
     View,
     Pressable,
   } from 'react-native';
-
+import AppContext from './AppContext';
 
 const Task = (props) => {
 
@@ -30,13 +31,19 @@ const Task = (props) => {
     selected: props.completion == 100,
   }];
 
+  const myContext = useContext(AppContext);
   const [visibleEditTaskDialog, setVisibleEditTaskDialog] = useState(false);
   const [notificationMessage, setNotificationMessage] = useState(null);
   const [radioButtons, setRadioButtons] = useState(radioButtonsData);
   const [fromUser, setFromUser] = useState();
   const [toUser, setToUser] = useState();
 
-  const showEditTaskDialog = () => {setVisibleEditTaskDialog(true);};
+  const showEditTaskDialog = () => {
+    if (myContext.thisLogin == props.userID || myContext.thisLogin == props.targetID) setVisibleEditTaskDialog(true);
+    else {
+      Alert.alert("Nemáte oprávnenie upravovať túto úlohu.");
+    }
+  };
   const cancelEditTaskDialog = () => {setVisibleEditTaskDialog(false);};
   const onPressRadioButton = (radioButtonsArray) => {
     setRadioButtons(radioButtonsArray);
@@ -48,13 +55,14 @@ const Task = (props) => {
     else if (radioButtons[2].selected == true) return 100;
   };
   const updateTask = () => {
-    if (notificationMessage == null) {
+    if (notificationMessage == null && myContext.thisLogin == props.targetID) {
       Alert.alert("400 BAD REQUEST\nVyplňte správu notifikácie.");
     } else if (getSelectedCompletion() == props.completion) {
       Alert.alert("400 BAD REQUEST\nNezmenili ste stav úlohy.");
     } else {
       putTask();
-      postNotification();
+      if (myContext.thisLogin == props.targetID) postNotification();
+      props.getTask();
       cancelEditTaskDialog();
     }
   };
@@ -63,10 +71,11 @@ const Task = (props) => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-            "userid": props.userID,
-            "targetid": props.targetID,
+            "userid": props.targetID,
+            "targetid": props.userID,
             "taskid": props.id,
             "content": notificationMessage,
+            "token": myContext.thisToken,
         })
     };
     await fetch("http://" + global.ip + "/bckend/noti/create", requestOptions)
@@ -90,7 +99,10 @@ const Task = (props) => {
     const requestOptions = {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ "completion": getSelectedCompletion() })
+        body: JSON.stringify({ 
+          "completion": getSelectedCompletion(),  
+          "token": myContext.thisToken,
+        })
     };
     await fetch("http://" + global.ip + "/bckend/tasks/" + props.id + "/update", requestOptions)
     .then(function(response) {
@@ -109,17 +121,44 @@ const Task = (props) => {
         console.log(data);
     })
   }
+  const deleteTask = async () => {
+    if (myContext.thisLogin == props.userID) {
+      await fetch("http://" + global.ip + "/bckend/tasks/delete/" + props.id, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          "token": myContext.thisToken,
+        })
+      })
+      .then(function(response) {
+        console.log(response.status);
+        if (response.status == 400) {
+          Alert.alert("[deleteTask]\n400 BAD REQUEST");
+        } else if (response.status == 200) {
+          props.getTask();
+        } else {
+          throw Error(response.status);
+        }
+        return response;
+      }).catch(error => {Alert.alert("Chyba servera. Skúste znovu."); console.log(error)})
+    }
+    else {
+      Alert.alert("Nemáte oprávnenie vymazať túto úlohu.");
+    }
+  }
 
   return (
 
     <View style={styles.item}>
       <Dialog.Container visible={visibleEditTaskDialog}>
-          <Dialog.Title>Úprava úlohy</Dialog.Title>
+          <Dialog.Title style={{ color: 'black'}}>Úprava úlohy</Dialog.Title>
           <Dialog.Description>
             <Text style={styles.title}>{props.name}</Text>
             <Text style={styles.taskId}>#{props.id}</Text>
           </Dialog.Description>
-          <Dialog.Input placeholder={'Notification Message'} value={notificationMessage} onChangeText={text => setNotificationMessage(text)}></Dialog.Input>
+          <Dialog.Input style={{color: 'black'}} placeholder={'Notification Message'} placeholderTextColor='black' value={notificationMessage} onChangeText={text => setNotificationMessage(text)}></Dialog.Input>
           <RadioGroup containerStyle={styles.radioGroup} radioButtons={radioButtons} onPress={onPressRadioButton} />
           <Dialog.Button label="Zrušiť" onPress={cancelEditTaskDialog} />
           <Dialog.Button label="Uložiť" onPress={updateTask} />
@@ -131,17 +170,26 @@ const Task = (props) => {
           <Text style={styles.title}>{props.name}</Text>
           <Text style={styles.taskId}>#{props.id}</Text>
           <View style={styles.fromTo}>
-            <Text style={{fontSize: 10}}>Od: {props.userFullName}</Text>
-            <Text style={{fontSize: 10}}>Pre: {props.targetFullName}</Text>
+            <Text style={{fontSize: 10, color: 'black', 
+                          fontWeight: myContext.thisLogin == props.userID ? 'bold' : 'normal',
+                          }}>Od: {props.userFullName}</Text>
+            <Text style={{fontSize: 10, color: 'black',
+                          fontWeight: myContext.thisLogin == props.targetID ? 'bold' : 'normal',}}>Pre: {props.targetFullName}</Text>
           </View>
         </View> 
-        <View style={styles.objective}><Text>{props.objective}</Text></View>
+        <View style={styles.objective}><Text style={{ color: 'black'}}>{props.objective}</Text></View>
         <View style={styles.editView}>
           <Pressable
             style={styles.editButton}
             onPress={showEditTaskDialog}
           >
             <MaterialCommunityIcons name="square-edit-outline" color={'darkgrey'} size={20}/>
+          </Pressable>
+          <Pressable
+            style={styles.deleteButton}
+            onPress={deleteTask}
+          >
+            <Ionicons name="trash-outline" color={'darkgrey'} size={20}/>
           </Pressable>
         </View>
         {/*<Text>{props.completion}</Text>*/}
@@ -186,12 +234,14 @@ const styles = StyleSheet.create({
     title: {
       fontSize: 20,
       fontWeight: '700',
+      color: 'black',
     },
     taskId: {
       fontSize: 12, 
       alignSelf: 'flex-end', 
       position: 'relative', 
       bottom: 2,
+      color: 'black',
     },
     taskHeader: {
       //width: 'auto',
@@ -220,14 +270,27 @@ const styles = StyleSheet.create({
     editView: {
       //backgroundColor: 'red',
       position: 'relative',
+      flex: 1,
       //top: 0,
-      left: 275,
-      //flexDirection: 'row',
-      //justifyContent: 'flex-end',
-      //width: 'auto',
+      //left: 255,
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      width: 300,
     },
     editButton: {
       
+    },
+    deleteView: {
+      //backgroundColor: 'red',
+      position: 'relative',
+      left: 275,
+      //flexDirection: 'row',
+      //alignItems: 'stretch',
+      //justifyContent: 'flex-end',
+      //width: '95%',
+    },
+    deleteButton: {
+
     },
     radioGroup: {
       alignItems: 'flex-start',

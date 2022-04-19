@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {
@@ -9,9 +9,10 @@ import {
     Pressable,
     TouchableOpacity,
   } from 'react-native';
-
+import AppContext from './AppContext';
 
 const Notification = (props) => {
+  const myContext = useContext(AppContext);
   const [seen, setSeen] = useState(false);
   const [notificationMessage, setNotificationMessage] = useState();
   const [fromUser, setFromUser] = useState();
@@ -19,7 +20,7 @@ const Notification = (props) => {
   
   const updateSeen = () => {
     if (!seen) setSeen(true);
-    else setSeen(false);
+    //else setSeen(false);
   };
   const updateNotificationIcon = () => {
     if (seen) return "email-open-outline";
@@ -27,13 +28,21 @@ const Notification = (props) => {
   };
 
   const deleteNotification = async () => {
-    await fetch("http://" + global.ip + "/bckend/noti/delete/" + props.id, { method: 'DELETE' })
+    await fetch("http://" + global.ip + "/bckend/noti/delete/" + props.id, {
+      method: 'DELETE',
+      headers: {
+          'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+          "token": myContext.thisToken,
+      })
+    })
     .then(function(response) {
       console.log(response.status);
       if (response.status == 400) {
         Alert.alert("[deleteNotification]\n400 BAD REQUEST");
       } else if (response.status == 200) {
-        //getTasks("http://" + global.ip + "/bckend/tasks/view");
+        props.getNotification();
       } else {
         throw Error(response.status);
       }

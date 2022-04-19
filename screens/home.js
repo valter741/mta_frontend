@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import CheckBox from '@react-native-community/checkbox';
 import {
     Alert,
@@ -9,14 +9,14 @@ import {
     Text,
     View,
   } from 'react-native';
-
+import AppContext from '../components/AppContext';
 import Task from '../components/task.js'
 import '../components/global.js'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Dialog from 'react-native-dialog';
 
 const Home = () => {
-
+    const myContext = useContext(AppContext);
     const [isLoaded, setIsLoaded] = useState(false);
     const [reload, setReload] = useState(false);
     const [taskItems, setTaskItems] = useState({});
@@ -97,11 +97,12 @@ const Home = () => {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                "userid": 1,
+                "userid": myContext.thisLogin,
                 "targetid": parseInt(taskTargetId),
                 "name": taskName,
                 "objective": taskObjective,
-                "completion": 0
+                "completion": 0,
+                "token": myContext.thisToken,
             })
         };
         await fetch("http://" + global.ip + "/bckend/tasks/create", requestOptions)
@@ -138,27 +139,27 @@ const Home = () => {
           <Dialog.Title>Filtrovanie</Dialog.Title>
           <View style={{flexDirection: 'row'}}>
             <CheckBox value={checkboxAllTasks} onValueChange={(newValue) => onlyCheckboxAllTasks(newValue)}/>
-            <Text style={{alignSelf: 'center'}}>Všetky úlohy</Text>
+            <Text style={{alignSelf: 'center', color: 'black'}}>Všetky úlohy</Text>
           </View>
           <View style={{flexDirection: 'row'}}>
             <CheckBox value={checkboxForMeTasks} onValueChange={(newValue) => {setCheckboxForMeTasks(newValue); setCheckboxAllTasks(false)}}/>
-            <Text style={{alignSelf: 'center'}}>Úlohy pre mňa</Text>
+            <Text style={{alignSelf: 'center', color: 'black'}}>Úlohy pre mňa</Text>
           </View>
           <View style={{flexDirection: 'row'}}>
             <CheckBox value={checkboxFromMeTasks} onValueChange={(newValue) => {setCheckboxFromMeTasks(newValue); setCheckboxAllTasks(false)}}/>
-            <Text style={{alignSelf: 'center'}}>Úlohy odo mňa</Text>
+            <Text style={{alignSelf: 'center', color: 'black'}}>Úlohy odo mňa</Text>
           </View>
           <View style={{flexDirection: 'row'}}>
             <CheckBox value={checkboxRedTasks} onValueChange={(newValue) => {setCheckboxRedTasks(newValue); setCheckboxAllTasks(false)}}/>
-            <Text style={{alignSelf: 'center'}}>Nezačaté úlohy</Text>
+            <Text style={{alignSelf: 'center', color: 'black'}}>Nezačaté úlohy</Text>
           </View>
           <View style={{flexDirection: 'row'}}>
             <CheckBox value={checkboxOrangeTasks} onValueChange={(newValue) => {setCheckboxOrangeTasks(newValue); setCheckboxAllTasks(false)}}/>
-            <Text style={{alignSelf: 'center'}}>Prebiehajúce úlohy</Text>
+            <Text style={{alignSelf: 'center', color: 'black'}}>Prebiehajúce úlohy</Text>
           </View>
           <View style={{flexDirection: 'row'}}>
             <CheckBox value={checkboxGreenTasks} onValueChange={(newValue) => {setCheckboxGreenTasks(newValue); setCheckboxAllTasks(false)}}/>
-            <Text style={{alignSelf: 'center'}}>Dokončené úlohy</Text>
+            <Text style={{alignSelf: 'center', color: 'black'}}>Dokončené úlohy</Text>
           </View>
           <Dialog.Button label="Zrušiť" onPress={cancelFilterDialog} />
           <Dialog.Button label="Filtrovať" onPress={applyFilter} />
@@ -178,20 +179,21 @@ const Home = () => {
               ? taskItems.items.map((item, index) => {
                   return (
                     <View key={index}>
-                      <Task 
-                        id={item.id} 
-                        userID={item.userid} 
-                        userFullName={item.userFullName} 
-                        targetID={item.targetid} 
-                        targetFullName={item.targetFullName} 
-                        name={item.name} 
-                        objective={item.objective} 
-                        completion={item.completion}
-                      />
+                        <Task 
+                          id={item.id} 
+                          userID={item.userid} 
+                          userFullName={item.userFullName} 
+                          targetID={item.targetid} 
+                          targetFullName={item.targetFullName} 
+                          name={item.name} 
+                          objective={item.objective} 
+                          completion={item.completion}
+                          getTask={() => setIsLoaded(false)}
+                        />
                     </View>
                   )
                 }) 
-              : <Text>Loading...</Text>
+              : <Text style={{ color: 'black'}}>Loading...</Text>
           }
           { 
             reload 
@@ -200,7 +202,7 @@ const Home = () => {
                   android_ripple={{color:'grey'}} 
                   onPress={() => getTasks("http://" + global.ip + "/bckend/tasks/view")}
                 >
-                  <Text style={{fontSize: 18}}> Reload </Text>
+                  <Text style={{fontSize: 18, color: 'black'}}> Reload </Text>
                 </Pressable> 
               : <Text></Text>
           }
@@ -298,6 +300,7 @@ const styles = StyleSheet.create({
     },
     plusText: {
         fontSize: 20,
+        color: 'black'
     },
 });
 
