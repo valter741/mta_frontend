@@ -74,14 +74,14 @@ const App: () => Node = () => {
               <MaterialCommunityIcons name="account" color={color} size={size} />
             ),
           }}/>
-          <Tab.Screen name="Domov" component={Home} options={{  
-            tabBarIcon: ({ color, size }) => (
-              <MaterialCommunityIcons name="home" color={color} size={size} />
-            ),
-          }}/>
           <Tab.Screen name="Kontakty" component={Contacts} options={{
             tabBarIcon: ({ color, size }) => (
               <AntDesign name="contacts" color={color} size={size} />
+            ),
+          }}/>
+          <Tab.Screen name="Domov" component={Home} options={{  
+            tabBarIcon: ({ color, size }) => (
+              <MaterialCommunityIcons name="home" color={color} size={size} />
             ),
           }}/>
           <Tab.Screen name="Notif." component={Noti} options={{
