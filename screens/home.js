@@ -32,7 +32,12 @@ const Home = () => {
     const showFilterDialog = () => {setVisibleFilterDialog(true);};
     const cancelFilterDialog = () => {setVisibleFilterDialog(false);};
     const applyFilter = () => {cancelFilterDialog(); getTasks("http://" + global.ip + "/bckend/tasks/view");}
-    const showAddTaskDialog = () => {setVisibleAddTaskDialog(true);};
+    const showAddTaskDialog = () => {
+      if (myContext.thisLogin == 0 ) {
+        Alert.alert("Prosím prihláste sa.");
+      }
+      else setVisibleAddTaskDialog(true);
+    };
     const cancelAddTaskDialog = () => {setVisibleAddTaskDialog(false);};
 
     const [checkboxAllTasks, setCheckboxAllTasks] = useState(true);
