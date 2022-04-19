@@ -188,7 +188,7 @@ const Contacts = () => {
         <SafeAreaView style={styles.sectionContainer}>
         {myContext.thisLogin == 0 ?
             <ScrollView>
-                <Text>Login Please</Text>
+                <Text  style={{color: 'white'}}>Login Please</Text>
             </ScrollView> :
             <View style={{flex:1}}>
                 {isLoaded ?
@@ -211,7 +211,7 @@ const Contacts = () => {
                                         keyboardType='numeric'
                                     />
                                     <Pressable style={styles.section3} android_ripple={{color:'grey'}} onPress={() => addContact()}>
-                                        <Text>Pridaj</Text>
+                                        <Text style={{color: 'white'}}>Pridaj</Text>
                                     </Pressable>
                                 </View> 
                             </View>:
@@ -222,14 +222,14 @@ const Contacts = () => {
                                             {item.senderid == myContext.thisLogin ?
                                                 <View style={{flex:1, flexDirection: 'row'}}>
                                                     <View style={styles.section2}>
-                                                        <Text style={{flex:1}}>Vy: {item.content}</Text>
+                                                        <Text style={{flex:1, color:'white'}}>Vy: {item.content}</Text>
                                                     </View>
                                                     <Pressable style={[styles.section1, {flex:0.05}]}  android_ripple={{color:'grey'}} onPress={() => deleteMessage(item.id)}>
                                                         <MaterialCommunityIcons  name="trash-can" color={'white'} size={18}/>
                                                     </Pressable>
                                                 </View>:
                                                 <View style={styles.section1}>
-                                                    <Text>{item.content}</Text>
+                                                    <Text style={{color: 'white'}}>{item.content}</Text>
                                                 </View>
                                             }
                                         </View>
@@ -242,13 +242,13 @@ const Contacts = () => {
                                         defaultValue={newMessage}
                                     />
                                     <Pressable style={styles.section3} android_ripple={{color:'grey'}} onPress={() => sendMessage()}>
-                                        <Text>Poslat</Text>
+                                        <Text style={{color: 'white'}}>Poslat</Text>
                                     </Pressable>
                                 </View>
                             </View>                      
                         }
                     </View> :
-                    <Text>Loading..</Text>
+                    <Text style={{color: 'white'}}>Loading..</Text>
                 }
             </View>
         } 
@@ -264,6 +264,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'darkgrey',
     },
     input: {
+        color: 'black',
         height: 40,
         margin: 12,
         borderWidth: 1,
@@ -306,6 +307,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     titles: {
+        color: 'white',
         fontSize: 16,
         fontWeight: '600',
     },
