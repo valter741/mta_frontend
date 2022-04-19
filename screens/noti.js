@@ -18,6 +18,7 @@ const Noti = () => {
     const [isLoaded, setIsLoaded] = useState(false);
     const [reload, setReload] = useState(false);
     const [notifications, setNotifications] = useState({});
+    const [loadStarted, setLoadStarted] = useState(false);
     
     const [taskUserId, setTaskUserId] = useState();
     const [taskTargetId, setTaskTargetId] = useState();
@@ -39,17 +40,20 @@ const Noti = () => {
             setNotifications(data);
             setReload(false);
             setIsLoaded(true);
+            setLoadStarted(false);
         })
     }
 
     useEffect(() => {
-        if(!isLoaded){
-            getNotifications("http://" + global.ip + "/bckend/noti/view?targetid=" + myContext.thisLogin);
-        }
         if (myContext.thisLogin == 0) {
+          setLoadStarted(false);
           setIsLoaded(false);
         }
-      });
+        if(!isLoaded && myContext.thisLogin != 0 && !loadStarted){
+            setLoadStarted(true);
+            getNotifications("http://" + global.ip + "/bckend/noti/view?targetid=" + myContext.thisLogin);
+        }
+    }), [myContext.thisLogin, isLoaded];
 
     return (
       <SafeAreaView style={styles.sectionContainer}>
@@ -85,7 +89,7 @@ const Noti = () => {
                     ? <Pressable 
                         style={styles.inputButton} 
                         android_ripple={{color:'grey'}} 
-                        onPress={() => getNotifications("http://" + global.ip + "/bckend/noti/view/?targetid=" + myContext.thisLogin)}
+                        onPress={() => getNotifications("http://" + global.ip + "/bckend/noti/view?targetid=" + myContext.thisLogin)}
                       >
                         <Text style={{fontSize: 18}}> Reload </Text>
                       </Pressable> 

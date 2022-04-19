@@ -31,6 +31,7 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 LogBox.ignoreLogs([
   "[react-native-gesture-handler] Seems like you\'re using an old API with gesture components, check out new Gestures system!",
 ]);
+LogBox.ignoreAllLogs();
 
 const Tab = createBottomTabNavigator();
 

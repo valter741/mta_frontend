@@ -131,7 +131,7 @@ const Home = () => {
         if(!isLoaded){
             getTasks("http://" + global.ip + "/bckend/tasks/view");
         }
-      });
+    });
 
     return (
       <SafeAreaView style={styles.sectionContainer}>
